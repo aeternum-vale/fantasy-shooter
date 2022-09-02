@@ -7,7 +7,7 @@ namespace FantasyShooter
 {
     public class Bullet : MonoBehaviour
     {
-        public event Action<Bullet> Hit;
+        public event Action<Bullet, Enemy> EnemyHit;
         public event Action<Bullet> OutOfTheScreen;
 
         [SerializeField] private Renderer _renderer;
@@ -34,15 +34,16 @@ namespace FantasyShooter
             OutOfTheScreen?.Invoke(this);
         }
 
-        private void OnEnable()
-        {
-
-        }
-
         private void OnDisable()
         {
             _isOutOfTheScreen = false;
             _trailRenderer.Clear();
+        }
+
+
+        private void OnTriggerEnter(Collider other)
+        {
+            EnemyHit?.Invoke(this, other.GetComponentInParent<Enemy>());
         }
     }
 }

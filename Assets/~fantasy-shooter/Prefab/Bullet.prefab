@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4859149291944729838}
   - component: {fileID: 5567374592954180322}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 1672950105388402330}
   - component: {fileID: 1672950105388402325}
   - component: {fileID: 3046252638759303565}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -251,4 +251,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6b85acafa5b7224b9e16bd88b714a32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _renderer: {fileID: 0}
   _trailRenderer: {fileID: 5567374592954180322}

@@ -61,6 +61,13 @@ namespace FantasyShooter
             AssignAnimationIDs();
         }
 
+        private void AssignAnimationIDs()
+        {
+            _animIDMoveX = Animator.StringToHash("MoveX");
+            _animIDMoveY = Animator.StringToHash("MoveY");
+        }
+
+
         private void Update()
         {
             UpdateRotation();
@@ -81,22 +88,38 @@ namespace FantasyShooter
 
             var bullet = LeanPool.Spawn<Bullet>(_bulletPrefab, _gunTip.position, _gunTip.rotation * spreadRotation, _bulletParent);
             bullet.Speed = _bulletSpeed;
-
-            bullet.OutOfTheScreen += OnOutOfTheScreen;
+            AddListenersOnBullet(bullet);
 
             _gunFlash.Play();
         }
 
-        private void OnOutOfTheScreen(Bullet bullet)
+        private void AddListenersOnBullet(Bullet bullet)
         {
-            LeanPool.Despawn(bullet);
-            bullet.OutOfTheScreen -= OnOutOfTheScreen;
+            bullet.OutOfTheScreen += OnBulletOutOfTheScreen;
+            bullet.EnemyHit += OnEnemyHit;
         }
 
-        private void AssignAnimationIDs()
+        private void RemoveListenersFromBullet(Bullet bullet)
         {
-            _animIDMoveX = Animator.StringToHash("MoveX");
-            _animIDMoveY = Animator.StringToHash("MoveY");
+            bullet.OutOfTheScreen -= OnBulletOutOfTheScreen;
+            bullet.EnemyHit -= OnEnemyHit;
+        }
+
+        private void OnEnemyHit(Bullet bullet, Enemy enemy)
+        {
+            enemy.Kill();
+            DespawnBullet(bullet);
+        }
+
+        private void OnBulletOutOfTheScreen(Bullet bullet)
+        {
+            DespawnBullet(bullet);
+        }
+
+        private void DespawnBullet(Bullet bullet)
+        {
+            RemoveListenersFromBullet(bullet);
+            LeanPool.Despawn(bullet);
         }
 
         private void UpdatePosition()
