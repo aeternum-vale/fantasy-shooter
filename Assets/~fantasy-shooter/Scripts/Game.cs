@@ -1,9 +1,13 @@
 using UnityEngine;
 
-public class Game : MonoBehaviour
+namespace FantasyShooter
 {
-    private void Awake()
+    public class Game : MonoBehaviour
     {
-        Application.targetFrameRate = 60;
+        private void Awake()
+        {
+            Application.targetFrameRate = Constants.TargetFrameRate;
+        }
     }
+
 }
