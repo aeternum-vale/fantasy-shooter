@@ -1,7 +1,10 @@
 ﻿using Gamelogic.Extensions;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Lean.Pool;
+
 using static FantasyShooter.Constants;
+
 
 namespace FantasyShooter
 {
@@ -18,18 +21,23 @@ namespace FantasyShooter
 
         [Range(0f, 0.3f)]
         [SerializeField] private float _rotationSmoothness = 0.12f;
+        [SerializeField] private float _additionalAngle;
 
         [SerializeField] private float _speedChangeRate = 10f;
 
         [Range(0, 0.99f)]
         [SerializeField] private float _speedSmoothness;
 
-        [Header("Player Grounded")]
-        [SerializeField] private bool _grounded = true;
 
-        [SerializeField] private float _groundedOffset = -0.14f;
-        [SerializeField] private float _groundedRadius = 0.28f;
-        [SerializeField] private LayerMask _groundLayers;
+
+        [Header("Shooting")]
+        [SerializeField] private Transform _gunTip;
+        [SerializeField] private Bullet _bulletPrefab;
+        [SerializeField] private Transform _bulletParent;
+        [SerializeField] float _bulletSpeed = 1f;
+        [SerializeField] float _bulletSpreadAngle = 1f;
+        [SerializeField] ParticleSystem _gunFlash;
+
 
         private CharacterController _controller;
         private Input _input;
@@ -46,7 +54,6 @@ namespace FantasyShooter
         private int _animIDMoveX;
         private int _animIDMoveY;
 
-        private float DeltaTimeCorrection => Time.deltaTime * TargetFrameRate;
 
         private void Awake()
         {
@@ -61,6 +68,23 @@ namespace FantasyShooter
             UpdateRotation();
             UpdatePosition();
             UpdateAnimation();
+            UpdateShooting();
+        }
+
+        private void UpdateShooting()
+        {
+            if (!_input.Shoot) return;
+
+            var spreadRotation =
+                Quaternion.Euler(
+                    Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle),
+                    Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle),
+                    Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle));
+
+            var bullet = LeanPool.Spawn(_bulletPrefab, _gunTip.position, _gunTip.rotation * spreadRotation, _bulletParent);
+            bullet.Speed = _bulletSpeed;
+
+            _gunFlash.Play();
         }
 
         private void AssignAnimationIDs()
@@ -90,7 +114,9 @@ namespace FantasyShooter
                 Quaternion.Euler(0f, 0f, transform.localEulerAngles.y - _mainCamera.transform.localEulerAngles.y)
                     * _input.Move * _speed;
 
-            _animationMoveCoords = Vector2.Lerp(_animationMoveCoords, _targetAnimationMoveCoords, (1f - _speedSmoothness) * DeltaTimeCorrection);
+            _animationMoveCoords =
+                Vector2.Lerp(_animationMoveCoords, _targetAnimationMoveCoords,
+                    (1f - _speedSmoothness) * DeltaTimeCorrection);
             _animator.SetFloat(_animIDMoveX, _animationMoveCoords.x);
             _animator.SetFloat(_animIDMoveY, _animationMoveCoords.y);
         }
@@ -105,7 +131,7 @@ namespace FantasyShooter
                 _aimGroundPosition = hit.point;
 
             var lookDir = (_aimGroundPosition - transform.position).normalized;
-            _targetRotation = Mathf.Atan2(lookDir.x, lookDir.z) * Mathf.Rad2Deg;
+            _targetRotation = Mathf.Atan2(lookDir.x, lookDir.z) * Mathf.Rad2Deg + _additionalAngle;
 
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
                 _rotationSmoothness * DeltaTimeCorrection);

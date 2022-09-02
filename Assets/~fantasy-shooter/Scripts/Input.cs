@@ -25,6 +25,8 @@ namespace FantasyShooter
         {
             Shoot = value.isPressed;
         }
+
+
     }
 
 }
