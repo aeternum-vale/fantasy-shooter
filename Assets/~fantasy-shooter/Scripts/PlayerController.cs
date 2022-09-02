@@ -1,35 +1,38 @@
 ﻿using Gamelogic.Extensions;
-using StarterAssets;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using static FantasyShooter.Constants;
 
 namespace FantasyShooter
 {
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(PlayerInput))]
-
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private Camera _mainCamera;
+
         [Header("Player")]
         [SerializeField] private float _moveSpeed = 2f;
+
         [SerializeField] private float _sprintSpeed = 3f;
 
         [Range(0f, 0.3f)]
         [SerializeField] private float _rotationSmoothness = 0.12f;
+
         [SerializeField] private float _speedChangeRate = 10f;
+
         [Range(0, 0.99f)]
         [SerializeField] private float _speedSmoothness;
 
         [Header("Player Grounded")]
         [SerializeField] private bool _grounded = true;
+
         [SerializeField] private float _groundedOffset = -0.14f;
         [SerializeField] private float _groundedRadius = 0.28f;
         [SerializeField] private LayerMask _groundLayers;
 
         private CharacterController _controller;
-        private StarterAssetsInputs _input;
+        private Input _input;
         private Animator _animator;
 
         private float _speed;
@@ -42,22 +45,19 @@ namespace FantasyShooter
 
         private int _animIDMoveX;
         private int _animIDMoveY;
-        private int _animIDGrounded;
 
-        private float DeltaTimeCorrection => Time.deltaTime * Constants.TargetFrameRate;
-
+        private float DeltaTimeCorrection => Time.deltaTime * TargetFrameRate;
 
         private void Awake()
         {
             _animator = GetComponent<Animator>();
             _controller = GetComponent<CharacterController>();
-            _input = GetComponent<StarterAssetsInputs>();
+            _input = GetComponent<Input>();
             AssignAnimationIDs();
         }
 
         private void Update()
         {
-            CheckIsGrounded();
             UpdateRotation();
             UpdatePosition();
             UpdateAnimation();
@@ -67,30 +67,18 @@ namespace FantasyShooter
         {
             _animIDMoveX = Animator.StringToHash("MoveX");
             _animIDMoveY = Animator.StringToHash("MoveY");
-            _animIDGrounded = Animator.StringToHash("Grounded");
-        }
-
-        private void CheckIsGrounded()
-        {
-            Vector3 spherePosition =
-                new Vector3(transform.position.x, transform.position.y - _groundedOffset, transform.position.z);
-            _grounded =
-                Physics.CheckSphere(spherePosition, _groundedRadius, _groundLayers,
-                    QueryTriggerInteraction.Ignore);
-
-            _animator.SetBool(_animIDGrounded, _grounded);
         }
 
         private void UpdatePosition()
         {
-            _targetSpeed = _input.sprint ? _sprintSpeed : _moveSpeed;
-            if (_input.move == Vector2.zero) _targetSpeed = 0f;
+            _targetSpeed = _input.Sprint ? _sprintSpeed : _moveSpeed;
+            if (_input.Move == Vector2.zero) _targetSpeed = 0f;
 
             _speed = Mathf.Lerp(_speed, _targetSpeed, _speedSmoothness * DeltaTimeCorrection);
 
-            var moveDistance = _speed / Constants.TargetFrameRate;
-            Vector3 forward = _mainCamera.transform.forward.WithY(0).normalized * _input.move.y;
-            Vector3 right = _mainCamera.transform.right * _input.move.x;
+            var moveDistance = _speed / TargetFrameRate;
+            Vector3 forward = _mainCamera.transform.forward.WithY(0f).normalized * _input.Move.y;
+            Vector3 right = _mainCamera.transform.right * _input.Move.x;
             Vector3 targetDirection = (forward + right).normalized;
 
             _controller.Move(targetDirection * moveDistance);
@@ -98,9 +86,9 @@ namespace FantasyShooter
 
         private void UpdateAnimation()
         {
-            _targetAnimationMoveCoords = 
-                Quaternion.Euler(0f, 0f, transform.localEulerAngles.y - _mainCamera.transform.localEulerAngles.y) 
-                    * _input.move * _speed;
+            _targetAnimationMoveCoords =
+                Quaternion.Euler(0f, 0f, transform.localEulerAngles.y - _mainCamera.transform.localEulerAngles.y)
+                    * _input.Move * _speed;
 
             _animationMoveCoords = Vector2.Lerp(_animationMoveCoords, _targetAnimationMoveCoords, (1f - _speedSmoothness) * DeltaTimeCorrection);
             _animator.SetFloat(_animIDMoveX, _animationMoveCoords.x);
@@ -112,7 +100,7 @@ namespace FantasyShooter
             Vector3 start = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             Vector3 end = start + _mainCamera.transform.forward;
 
-            int layerMask = 1 << 6;
+            int layerMask = 1 << GroundLayer;
             if (Physics.Raycast(start, end - start, out RaycastHit hit, _mainCamera.farClipPlane, layerMask))
                 _aimGroundPosition = hit.point;
 

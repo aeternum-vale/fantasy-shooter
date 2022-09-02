@@ -1,10 +1,10 @@
-﻿using System;
-
-namespace FantasyShooter
+﻿namespace FantasyShooter
 {
-	public class Constants
+    public static class Constants
 	{
 		public const int TargetFrameRate = 60;
+
+		public const int GroundLayer = 6;
 	}
 
 }
