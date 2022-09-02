@@ -1,4 +1,5 @@
 using UnityEngine;
+using static FantasyShooter.Constants;
 
 namespace FantasyShooter
 {
@@ -12,6 +13,8 @@ namespace FantasyShooter
         private Vector3 _offset;
         private Vector3 _targetPosition;
 
+
+
         private void Awake()
         {
             _offset = transform.position - _target.position;
@@ -20,7 +23,7 @@ namespace FantasyShooter
         private void Update()
         {
             _targetPosition = _target.position + _offset;
-            transform.position = Vector3.Slerp(transform.position, _targetPosition, 1f - _smoothness);
+            transform.position = Vector3.Slerp(transform.position, _targetPosition, (1f - _smoothness) * DeltaTimeCorrection);
         }
     }
 

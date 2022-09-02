@@ -28,8 +28,6 @@ namespace FantasyShooter
         [Range(0, 0.99f)]
         [SerializeField] private float _speedSmoothness;
 
-
-
         [Header("Shooting")]
         [SerializeField] private Transform _gunTip;
         [SerializeField] private Bullet _bulletPrefab;
@@ -81,10 +79,18 @@ namespace FantasyShooter
                     Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle),
                     Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle));
 
-            var bullet = LeanPool.Spawn(_bulletPrefab, _gunTip.position, _gunTip.rotation * spreadRotation, _bulletParent);
+            var bullet = LeanPool.Spawn<Bullet>(_bulletPrefab, _gunTip.position, _gunTip.rotation * spreadRotation, _bulletParent);
             bullet.Speed = _bulletSpeed;
 
+            bullet.OutOfTheScreen += OnOutOfTheScreen;
+
             _gunFlash.Play();
+        }
+
+        private void OnOutOfTheScreen(Bullet bullet)
+        {
+            LeanPool.Despawn(bullet);
+            bullet.OutOfTheScreen -= OnOutOfTheScreen;
         }
 
         private void AssignAnimationIDs()
