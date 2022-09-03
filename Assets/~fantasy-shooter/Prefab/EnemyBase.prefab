@@ -52,6 +52,7 @@ MonoBehaviour:
   _collider: {fileID: 1429276291025112754}
   _rotateSmoothness: 0.918
   _speed: 2
+  _attackDistance: 1
 --- !u!54 &8855844054691375997
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -66,7 +67,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 4
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!135 &1429276291025112754
 SphereCollider:
@@ -80,4 +81,4 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5294103
-  m_Center: {x: -0.07396507, y: 1.11, z: -0.046624605}
+  m_Center: {x: 0, y: 1.11, z: -0.046624605}
