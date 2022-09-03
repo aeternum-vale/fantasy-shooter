@@ -6,6 +6,8 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] private Animator _animator;
     [SerializeField] Transform _target;
+    [SerializeField] Rigidbody _rigidBody;
+    [SerializeField] Collider _collider;
     [Range(0, 0.99f)]
     [SerializeField] private float _rotateSmoothness = 0.5f;
     [SerializeField] private float _speed;
@@ -37,11 +39,15 @@ public class Enemy : MonoBehaviour
         _targetPoint = Vector3.Slerp(_targetPoint, _target.position, (1f - _rotateSmoothness) * DeltaTimeCorrection);
         transform.LookAt(_targetPoint);
 
-        transform.position += _speed * Time.deltaTime * transform.forward;
+
+        _rigidBody.MovePosition(transform.position + _speed * Time.deltaTime * transform.forward);
     }
 
     public void Kill()
     {
+        _collider.enabled = false;
+        _rigidBody.isKinematic = true;
+
         _isKilled = true;
         _animator.SetTrigger(_killTriggerID);
     }

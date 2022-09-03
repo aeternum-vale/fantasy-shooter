@@ -155,7 +155,7 @@ namespace FantasyShooter
             Vector3 start = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             Vector3 end = start + _mainCamera.transform.forward;
 
-            int layerMask = 1 << GroundLayer;
+            int layerMask = 1 << AimPlaneLayer;
             if (Physics.Raycast(start, end - start, out RaycastHit hit, _mainCamera.farClipPlane, layerMask))
                 _aimGroundPosition = hit.point;
 
