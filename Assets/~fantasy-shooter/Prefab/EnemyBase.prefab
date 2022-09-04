@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1814390165336509505}
   - component: {fileID: 8855844054691375997}
   - component: {fileID: 1429276291025112754}
+  - component: {fileID: 6338517423103434519}
   m_Layer: 7
   m_Name: EnemyBase
   m_TagString: Untagged
@@ -52,7 +53,7 @@ MonoBehaviour:
   _collider: {fileID: 1429276291025112754}
   _rotateSmoothness: 0.918
   _speed: 2
-  _attackDistance: 1
+  _attackDistance: 1.15
 --- !u!54 &8855844054691375997
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -82,3 +83,17 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5294103
   m_Center: {x: 0, y: 1.11, z: -0.046624605}
+--- !u!114 &6338517423103434519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1814390165336509519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 220b319265fff7e45b4e797572fa18d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _updateDelay: 1
+  _speedChangeSmoothness: 0.95
