@@ -1,16 +1,14 @@
 ﻿using Gamelogic.Extensions;
+using Lean.Pool;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Lean.Pool;
-
 using static FantasyShooter.Constants;
-
 
 namespace FantasyShooter
 {
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(PlayerInput))]
-    public class PlayerController : MonoBehaviour
+    public class Player : MonoBehaviour
     {
         [SerializeField] private Camera _mainCamera;
 
@@ -21,6 +19,7 @@ namespace FantasyShooter
 
         [Range(0f, 0.3f)]
         [SerializeField] private float _rotationSmoothness = 0.12f;
+
         [SerializeField] private float _additionalAngle;
 
         [SerializeField] private float _speedChangeRate = 10f;
@@ -30,12 +29,12 @@ namespace FantasyShooter
 
         [Header("Shooting")]
         [SerializeField] private Transform _gunTip;
+
         [SerializeField] private Bullet _bulletPrefab;
         [SerializeField] private Transform _bulletParent;
-        [SerializeField] float _bulletSpeed = 1f;
-        [SerializeField] float _bulletSpreadAngle = 1f;
-        [SerializeField] ParticleSystem _gunFlash;
-
+        [SerializeField] private float _bulletSpeed = 1f;
+        [SerializeField] private float _bulletSpreadAngle = 1f;
+        [SerializeField] private ParticleSystem _gunFlash;
 
         private CharacterController _controller;
         private Input _input;
@@ -52,7 +51,6 @@ namespace FantasyShooter
         private int _animIDMoveX;
         private int _animIDMoveY;
 
-
         private void Awake()
         {
             _animator = GetComponent<Animator>();
@@ -66,7 +64,6 @@ namespace FantasyShooter
             _animIDMoveX = Animator.StringToHash("MoveX");
             _animIDMoveY = Animator.StringToHash("MoveY");
         }
-
 
         private void Update()
         {
@@ -86,7 +83,13 @@ namespace FantasyShooter
                     Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle),
                     Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle));
 
-            var bullet = LeanPool.Spawn<Bullet>(_bulletPrefab, _gunTip.position, _gunTip.rotation * spreadRotation, _bulletParent);
+            var bullet = 
+                LeanPool.Spawn(
+                    _bulletPrefab, 
+                    _gunTip.position, 
+                    _gunTip.rotation * spreadRotation, 
+                    _bulletParent);
+
             bullet.Speed = _bulletSpeed;
             AddListenersOnBullet(bullet);
 
@@ -107,8 +110,8 @@ namespace FantasyShooter
 
         private void OnEnemyHit(Bullet bullet, Enemy enemy)
         {
-            enemy.Kill();
             DespawnBullet(bullet);
+            enemy.Kill();
         }
 
         private void OnBulletOutOfTheScreen(Bullet bullet)

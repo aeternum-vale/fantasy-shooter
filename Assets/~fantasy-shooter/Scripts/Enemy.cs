@@ -1,8 +1,8 @@
 using MonsterLove.StateMachine;
+using System;
 using UnityEngine;
-
+using Random = UnityEngine.Random;
 using static FantasyShooter.Constants;
-
 
 
 namespace FantasyShooter
@@ -17,17 +17,21 @@ namespace FantasyShooter
             Death
         }
 
+        public event Action DamagePlayer;
+
         [SerializeField] private Animator _animator;
-        [SerializeField] Transform _target;
-        [SerializeField] Rigidbody _rigidBody;
-        [SerializeField] Collider _collider;
+        [SerializeField] private Rigidbody _rigidBody;
+        [SerializeField] private Collider _collider;
+        [Space]
         [Range(0, 0.99f)]
         [SerializeField] private float _rotateSmoothness = 0.5f;
         [SerializeField] private float _speed;
         [SerializeField] private float _attackDistance;
+        [SerializeField] private float _attackTimeForDamage;
 
         private StateMachine<EState> _fsm;
 
+        private Transform _playerTransform;
         private SpeedReckoner _speedReckoner;
 
         private bool _isDead = false;
@@ -38,8 +42,12 @@ namespace FantasyShooter
         private int _attackFlagID;
         private int _speedID;
 
+        private float _attackingTime;
+
         private const string MoveState = "Moving";
         private const int DeathVariantsCount = 4;
+
+        public Transform PlayerTransform { get => _playerTransform; set => _playerTransform = value; }
 
         private void Awake()
         {
@@ -55,7 +63,6 @@ namespace FantasyShooter
 
         private void Start()
         {
-            _animator.SetFloat(_speedID, 1f);
             _animator.Play(MoveState, -1, Random.Range(0f, 1f));
         }
 
@@ -79,8 +86,18 @@ namespace FantasyShooter
 
         private void RotateTowardTarget()
         {
-            _targetPoint = Vector3.Slerp(_targetPoint, _target.position, (1f - _rotateSmoothness) * DeltaTimeCorrection);
+            _targetPoint = Vector3.Slerp(_targetPoint, _playerTransform.position, (1f - _rotateSmoothness) * DeltaTimeCorrection);
             transform.LookAt(_targetPoint);
+        }
+
+        private void UpdateAttackingTime()
+        {
+            _attackingTime += Time.deltaTime;
+            if (_attackingTime >= _attackTimeForDamage)
+            {
+                _attackingTime = 0f;
+                DamagePlayer?.Invoke();
+            }
         }
 
         #region FSM
@@ -97,7 +114,7 @@ namespace FantasyShooter
             Vector3 newPosition = transform.position + _speed * Time.deltaTime * transform.forward;
             _rigidBody.MovePosition(newPosition);
 
-            if (Vector3.Distance(transform.position, _target.position) <= _attackDistance)
+            if (Vector3.Distance(transform.position, _playerTransform.position) <= _attackDistance)
                 _fsm.ChangeState(EState.Attack);
             else
                 SetAnimatorSpeedValue();
@@ -118,20 +135,21 @@ namespace FantasyShooter
 
         private void Attack_Enter()
         {
+            _attackingTime = 0;
             _animator.SetBool(_attackFlagID, true);
         }
 
         private void Attack_Update()
         {
+            UpdateAttackingTime();
+
             RotateTowardTarget();
-            if (Vector3.Distance(transform.position, _target.position) > _attackDistance)
+
+            if (Vector3.Distance(transform.position, _playerTransform.position) > _attackDistance)
                 _fsm.ChangeState(EState.Move);
         }
 
         #endregion
-
-
-
 
     }
 }

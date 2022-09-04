@@ -20,7 +20,6 @@ namespace FantasyShooter
 
 
         private float _speed;
-        private bool _isOutOfTheScreen = false;
 
         private void Update()
         {
@@ -29,17 +28,13 @@ namespace FantasyShooter
 
         private void OnBecameInvisible()
         {
-            if (_isOutOfTheScreen) return;
-            _isOutOfTheScreen = true;
             OutOfTheScreen?.Invoke(this);
         }
 
         private void OnDisable()
         {
-            _isOutOfTheScreen = false;
             _trailRenderer.Clear();
         }
-
 
         private void OnTriggerEnter(Collider other)
         {

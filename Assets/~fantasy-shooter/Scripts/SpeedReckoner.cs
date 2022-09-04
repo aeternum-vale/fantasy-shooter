@@ -28,18 +28,18 @@ namespace FantasyShooter
 
         private IEnumerator ReckonSpeed()
         {
-            YieldInstruction timedWait = new WaitForSeconds(_updateDelay);
+            YieldInstruction timeToWait = new WaitForSeconds(_updateDelay);
             Vector3 lastPosition = transform.position;
             float lastTimestamp = Time.time;
 
             while (enabled)
             {
-                yield return timedWait;
+                yield return timeToWait;
 
                 var deltaPosition = (transform.position - lastPosition).magnitude;
                 var deltaTime = Time.time - lastTimestamp;
 
-                if (Mathf.Approximately(deltaPosition, 0f)) // Clean up "near-zero" displacement
+                if (Mathf.Approximately(deltaPosition, 0f)) 
                     deltaPosition = 0f;
 
                 _targetReckonedSpeed = deltaPosition / deltaTime;
