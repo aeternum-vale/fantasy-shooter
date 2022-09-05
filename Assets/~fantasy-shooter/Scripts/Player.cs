@@ -1,8 +1,10 @@
-﻿using Gamelogic.Extensions;
-using Lean.Pool;
+﻿using Lean.Pool;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 using static FantasyShooter.Constants;
+using NaughtyAttributes;
 
 namespace FantasyShooter
 {
@@ -10,18 +12,22 @@ namespace FantasyShooter
     [RequireComponent(typeof(PlayerInput))]
     public class Player : MonoBehaviour
     {
+        public event Action Died;
+
         [SerializeField] private Camera _mainCamera;
 
         [Header("Player")]
-        [SerializeField] private float _moveSpeed = 2f;
+        [ReadOnly]
+        [SerializeField] private float _health;
+        [SerializeField] private float _healthTotal;
+        [SerializeField] private float _decreasedHealthOnDamage;
 
+        [SerializeField] private float _moveSpeed = 2f;
         [SerializeField] private float _sprintSpeed = 3f;
 
         [Range(0f, 0.3f)]
         [SerializeField] private float _rotationSmoothness = 0.12f;
-
         [SerializeField] private float _additionalAngle;
-
         [SerializeField] private float _speedChangeRate = 10f;
 
         [Range(0, 0.99f)]
@@ -51,12 +57,15 @@ namespace FantasyShooter
         private int _animIDMoveX;
         private int _animIDMoveY;
 
+        public float NormalizedHealth => _health / _healthTotal;
+
         private void Awake()
         {
             _animator = GetComponent<Animator>();
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<Input>();
             AssignAnimationIDs();
+            _health = _healthTotal;
         }
 
         private void AssignAnimationIDs()
@@ -67,6 +76,8 @@ namespace FantasyShooter
 
         private void Update()
         {
+            if (Time.timeScale == 0) return;
+
             UpdateRotation();
             UpdatePosition();
             UpdateAnimation();
@@ -83,11 +94,11 @@ namespace FantasyShooter
                     Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle),
                     Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle));
 
-            var bullet = 
+            var bullet =
                 LeanPool.Spawn(
-                    _bulletPrefab, 
-                    _gunTip.position, 
-                    _gunTip.rotation * spreadRotation, 
+                    _bulletPrefab,
+                    _gunTip.position,
+                    _gunTip.rotation * spreadRotation,
                     _bulletParent);
 
             bullet.Speed = _bulletSpeed;
@@ -98,13 +109,13 @@ namespace FantasyShooter
 
         private void AddListenersOnBullet(Bullet bullet)
         {
-            bullet.OutOfTheScreen += OnBulletOutOfTheScreen;
+            bullet.OutOfView += OnBulletOutOfTheScreen;
             bullet.EnemyHit += OnEnemyHit;
         }
 
         private void RemoveListenersFromBullet(Bullet bullet)
         {
-            bullet.OutOfTheScreen -= OnBulletOutOfTheScreen;
+            bullet.OutOfView -= OnBulletOutOfTheScreen;
             bullet.EnemyHit -= OnEnemyHit;
         }
 
@@ -169,6 +180,16 @@ namespace FantasyShooter
                 _rotationSmoothness * DeltaTimeCorrection);
 
             transform.rotation = Quaternion.Euler(0f, rotation, 0f);
+        }
+
+        public void Damage()
+        {
+            _health -= _decreasedHealthOnDamage;
+            if (_health <= 0)
+            {
+                _health = 0;
+                Died?.Invoke();
+            }
         }
     }
 }

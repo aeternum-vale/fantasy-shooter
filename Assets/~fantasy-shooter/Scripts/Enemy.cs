@@ -3,7 +3,8 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using static FantasyShooter.Constants;
-
+using System.Collections;
+using DG.Tweening;
 
 namespace FantasyShooter
 {
@@ -14,10 +15,12 @@ namespace FantasyShooter
         {
             Move,
             Attack,
-            Death
+            Death,
+            Decommissioning
         }
 
         public event Action DamagePlayer;
+        public event Action<Enemy> Decommissioned;
 
         [SerializeField] private Animator _animator;
         [SerializeField] private Rigidbody _rigidBody;
@@ -31,7 +34,7 @@ namespace FantasyShooter
 
         private StateMachine<EState> _fsm;
 
-        private Transform _playerTransform;
+        [SerializeField] private Transform _playerTransform;
         private SpeedReckoner _speedReckoner;
 
         private bool _isDead = false;
@@ -41,11 +44,13 @@ namespace FantasyShooter
         private int _deathVariantID;
         private int _attackFlagID;
         private int _speedID;
+        private Tween _decommissioningTween;
 
         private float _attackingTime;
 
         private const string MoveState = "Moving";
         private const int DeathVariantsCount = 4;
+
 
         public Transform PlayerTransform { get => _playerTransform; set => _playerTransform = value; }
 
@@ -54,16 +59,21 @@ namespace FantasyShooter
             _speedReckoner = GetComponent<SpeedReckoner>();
 
             _fsm = new StateMachine<EState>(this);
-            _fsm.ChangeState(EState.Move);
 
             AssignAnimationIDs();
 
             _animator.SetInteger(_deathVariantID, Random.Range(1, DeathVariantsCount + 1));
         }
 
-        private void Start()
+
+        private void OnEnable()
         {
+            _fsm.ChangeState(EState.Move);
             _animator.Play(MoveState, -1, Random.Range(0f, 1f));
+            _attackingTime = 0f;
+            _isDead = false;
+            _collider.enabled = true;
+            _rigidBody.isKinematic = false;
         }
 
         private void AssignAnimationIDs()
@@ -86,7 +96,11 @@ namespace FantasyShooter
 
         private void RotateTowardTarget()
         {
-            _targetPoint = Vector3.Slerp(_targetPoint, _playerTransform.position, (1f - _rotateSmoothness) * DeltaTimeCorrection);
+            _targetPoint =
+                Vector3.Slerp(
+                    _targetPoint,
+                    _playerTransform.position,
+                    (1f - _rotateSmoothness) * DeltaTimeCorrection);
             transform.LookAt(_targetPoint);
         }
 
@@ -97,6 +111,21 @@ namespace FantasyShooter
             {
                 _attackingTime = 0f;
                 DamagePlayer?.Invoke();
+            }
+        }
+
+        private IEnumerator WaitBeforeDecommissioning()
+        {
+            yield return new WaitForSeconds(4f);
+            _fsm.ChangeState(EState.Decommissioning);
+        }
+
+        private void OnBecameInvisible()
+        {
+            if (_fsm.State == EState.Decommissioning)
+            {
+                _decommissioningTween?.Kill();
+                Decommissioned?.Invoke(this);
             }
         }
 
@@ -131,6 +160,8 @@ namespace FantasyShooter
             _collider.enabled = false;
             _rigidBody.isKinematic = true;
             _animator.SetTrigger(_deathTriggerID);
+
+            StartCoroutine(WaitBeforeDecommissioning());
         }
 
         private void Attack_Enter()
@@ -147,6 +178,14 @@ namespace FantasyShooter
 
             if (Vector3.Distance(transform.position, _playerTransform.position) > _attackDistance)
                 _fsm.ChangeState(EState.Move);
+        }
+        
+
+        private void Decommissioning_Enter()
+        {
+            _decommissioningTween = transform
+                .DOMove(transform.position + new Vector3(0f, -2f, 0f), 5f)
+                .OnComplete(() => Decommissioned?.Invoke(this));
         }
 
         #endregion

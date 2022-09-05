@@ -8,7 +8,7 @@ namespace FantasyShooter
     public class Bullet : MonoBehaviour
     {
         public event Action<Bullet, Enemy> EnemyHit;
-        public event Action<Bullet> OutOfTheScreen;
+        public event Action<Bullet> OutOfView;
 
         [SerializeField] private Renderer _renderer;
         [SerializeField] private TrailRenderer _trailRenderer;
@@ -16,7 +16,6 @@ namespace FantasyShooter
 
         public float Speed { get => _speed; set => _speed = value; }
 
-        //[SerializeField] private Camera _mainCamera;
 
 
         private float _speed;
@@ -28,7 +27,7 @@ namespace FantasyShooter
 
         private void OnBecameInvisible()
         {
-            OutOfTheScreen?.Invoke(this);
+            OutOfView?.Invoke(this);
         }
 
         private void OnDisable()

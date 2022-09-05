@@ -48,12 +48,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 0}
-  _target: {fileID: 0}
   _rigidBody: {fileID: 8855844054691375997}
   _collider: {fileID: 1429276291025112754}
   _rotateSmoothness: 0.918
   _speed: 2
   _attackDistance: 1.15
+  _attackTimeForDamage: 0.5
+  _playerTransform: {fileID: 0}
 --- !u!54 &8855844054691375997
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -82,7 +83,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5294103
-  m_Center: {x: 0, y: 1.11, z: -0.046624605}
+  m_Center: {x: 0, y: 1.43, z: -0.046624605}
 --- !u!114 &6338517423103434519
 MonoBehaviour:
   m_ObjectHideFlags: 0

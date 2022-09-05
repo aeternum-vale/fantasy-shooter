@@ -18,7 +18,7 @@ namespace FantasyShooter
 
         private void OnEnable()
         {
-            StartCoroutine(ReckonSpeed());
+            StartCoroutine(StartSpeedReckoningCycle());
         }
 
         private void OnDisable()
@@ -26,7 +26,7 @@ namespace FantasyShooter
             StopAllCoroutines();
         }
 
-        private IEnumerator ReckonSpeed()
+        private IEnumerator StartSpeedReckoningCycle()
         {
             YieldInstruction timeToWait = new WaitForSeconds(_updateDelay);
             Vector3 lastPosition = transform.position;
