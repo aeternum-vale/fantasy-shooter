@@ -1,8 +1,6 @@
-using DG.Tweening;
 using Lean.Pool;
 using NaughtyAttributes;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,6 +10,7 @@ namespace FantasyShooter
     public class Game : MonoBehaviour
     {
         [SerializeField] private Camera _mainCamera;
+        [SerializeField] private UIController _uiController;
         [SerializeField] private Player _player;
         [SerializeField] private Enemy[] _enemyPrefabs;
         [SerializeField] private Transform _enemiesParent;
@@ -23,18 +22,10 @@ namespace FantasyShooter
         [SerializeField] private int _enemiesCount;
         [SerializeField] private bool _isSpawningOn = true;
 
-        [Header("UI")]
-        [SerializeField] private Image _healthBar;
-        [SerializeField] private TMP_Text _gameOverLabel;
-
-        private float _healthBarInitScaleX;
-        private Tween _healthBarTween;
-
         private void Awake()
         {
             Application.targetFrameRate = Constants.TargetFrameRate;
             _player.Died += OnPlayerDied;
-            _healthBarInitScaleX = _healthBar.rectTransform.localScale.x;
         }
 
         private void Start()
@@ -45,15 +36,15 @@ namespace FantasyShooter
         private void OnDestroy()
         {
             _player.Died -= OnPlayerDied;
-            _healthBarTween?.Kill();
             StopAllCoroutines();
             LeanPool.DespawnAll();
         }
 
         private void OnPlayerDied()
         {
-            _gameOverLabel.gameObject.SetActive(true);
-            UpdateHealthBarImmediately();
+            _uiController.ShowGameOverMessage();
+            _uiController.
+                SetHealthImmediately(_player.NormalizedHealth);
             Time.timeScale = 0;
             StartCoroutine(WaitBeforeGameRestart());
         }
@@ -111,20 +102,8 @@ namespace FantasyShooter
         {
             _player.Damage(enemy.DamageAmount);
 
-            UpdateHealthBarWithAnimation();
-        }
-
-        private void UpdateHealthBarWithAnimation()
-        {
-            _healthBarTween?.Kill();
-            _healthBarTween = _healthBar.rectTransform.DOScaleX(_healthBarInitScaleX * _player.NormalizedHealth, 0.2f)
-                .SetEase(Ease.InQuad);
-        }
-
-        private void UpdateHealthBarImmediately()
-        {
-            _healthBarTween?.Kill();
-            _healthBar.rectTransform.localScale = _healthBar.rectTransform.localScale.WithX(_healthBarInitScaleX * _player.NormalizedHealth);
+            _uiController.
+                SetHealthWithAnimation(_player.NormalizedHealth);
         }
 
         private void OnDecommissioned(Enemy enemy)
