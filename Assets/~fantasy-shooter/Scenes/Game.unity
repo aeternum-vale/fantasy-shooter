@@ -355,8 +355,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 974027770}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalPosition: {x: 0, y: -0.02, z: 0}
+  m_LocalScale: {x: 100, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -714,7 +714,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 10, y: 0.1, z: 10}
+  m_Size: {x: 100, y: 0.1, z: 100}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &1488382582
 Transform:
@@ -764,6 +764,9 @@ MonoBehaviour:
   _player: {fileID: 6982812147933622148}
   _enemyPrefabs:
   - {fileID: 5271941782780110486, guid: a9a193ecbd7dda74d90dc478e5e2fc05, type: 3}
+  - {fileID: 5271941782780110486, guid: cc42970d93ae1b247a8303acbea4d2de, type: 3}
+  - {fileID: 5271941782780110486, guid: a3bd9185aa6189440987f5ca99e240ef, type: 3}
+  - {fileID: 5271941782780110486, guid: c762a2fa6a96ede43aafe1894d72b7c6, type: 3}
   _enemiesParent: {fileID: 1083867965}
   _enemySpawnInterval: 3
   _enemySpawnIntervalDecreaseSpeed: 0.03

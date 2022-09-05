@@ -21,8 +21,12 @@ namespace FantasyShooter
         private void Update()
         {
             _targetPosition = _target.position + _offset;
-            transform.position =
-                Vector3.Slerp(transform.position, _targetPosition, (1f - _smoothness) * DeltaTimeCorrection);
+
+            if (_smoothness == 0)
+                transform.position = _targetPosition;
+            else
+                transform.position =
+                    Vector3.Slerp(transform.position, _targetPosition, (1f - _smoothness) * DeltaTimeCorrection);
         }
     }
 }

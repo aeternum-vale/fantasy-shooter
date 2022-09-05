@@ -84,7 +84,10 @@ namespace FantasyShooter
 
         private void UpdateShooting()
         {
-            if (!_input.Shoot) return;
+            if (!_input.Shoot) {
+                _shootingTime = _shootingInterval;
+                return;
+            };
 
             _shootingTime += Time.deltaTime;
 
