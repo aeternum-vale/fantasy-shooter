@@ -1,10 +1,10 @@
 ﻿using Lean.Pool;
+using NaughtyAttributes;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Random = UnityEngine.Random;
 using static FantasyShooter.Constants;
-using NaughtyAttributes;
+using Random = UnityEngine.Random;
 
 namespace FantasyShooter
 {
@@ -21,15 +21,12 @@ namespace FantasyShooter
         [SerializeField] private float _health;
         [SerializeField] private float _healthTotal;
         [SerializeField] private float _decreasedHealthOnDamage;
-
         [SerializeField] private float _moveSpeed = 2f;
         [SerializeField] private float _sprintSpeed = 3f;
-
         [Range(0f, 0.3f)]
         [SerializeField] private float _rotationSmoothness = 0.12f;
         [SerializeField] private float _additionalAngle;
         [SerializeField] private float _speedChangeRate = 10f;
-
         [Range(0, 0.99f)]
         [SerializeField] private float _speedSmoothness;
 
@@ -41,7 +38,6 @@ namespace FantasyShooter
         [SerializeField] private float _bulletSpeed = 1f;
         [SerializeField] private float _bulletSpreadAngle = 1f;
         [SerializeField] private float _shootingInterval = 0.01f;
-
 
         private CharacterController _controller;
         private Input _input;

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 namespace FantasyShooter
 {
     public class Input : MonoBehaviour
@@ -9,7 +8,6 @@ namespace FantasyShooter
         public Vector2 Move { get; set; }
         public bool Sprint { get; set; }
         public bool Shoot { get; set; }
-
 
         private void OnMove(InputValue value)
         {
@@ -25,8 +23,5 @@ namespace FantasyShooter
         {
             Shoot = value.isPressed;
         }
-
-
     }
-
 }

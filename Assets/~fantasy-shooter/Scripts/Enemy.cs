@@ -1,10 +1,10 @@
+using DG.Tweening;
 using MonsterLove.StateMachine;
 using System;
-using UnityEngine;
-using Random = UnityEngine.Random;
-using static FantasyShooter.Constants;
 using System.Collections;
-using DG.Tweening;
+using UnityEngine;
+using static FantasyShooter.Constants;
+using Random = UnityEngine.Random;
 
 namespace FantasyShooter
 {
@@ -22,9 +22,11 @@ namespace FantasyShooter
         public event Action DamagePlayer;
         public event Action<Enemy> Decommissioned;
 
+        [SerializeField] private Transform _playerTransform;
         [SerializeField] private Animator _animator;
         [SerializeField] private Rigidbody _rigidBody;
         [SerializeField] private Collider _collider;
+
         [Space]
         [Range(0, 0.99f)]
         [SerializeField] private float _rotateSmoothness = 0.5f;
@@ -33,24 +35,22 @@ namespace FantasyShooter
         [SerializeField] private float _attackTimeForDamage;
 
         private StateMachine<EState> _fsm;
-
-        [SerializeField] private Transform _playerTransform;
         private SpeedReckoner _speedReckoner;
 
-        private bool _isDead = false;
         private Vector3 _targetPoint;
+        private float _attackingTime;
+        private Tween _decommissioningTween;
 
         private int _deathTriggerID;
         private int _deathVariantID;
         private int _attackFlagID;
         private int _speedID;
-        private Tween _decommissioningTween;
-
-        private float _attackingTime;
 
         private const string MoveState = "Moving";
         private const int DeathVariantsCount = 4;
-
+        private const float DelayBeforeDecommissioningSec = 4f;
+        private const float SpeedToAnimationSpeedCoef = 0.65f;
+        private const float DecommissionAnimationDuration = 5f;
 
         public Transform PlayerTransform { get => _playerTransform; set => _playerTransform = value; }
 
@@ -65,13 +65,16 @@ namespace FantasyShooter
             _animator.SetInteger(_deathVariantID, Random.Range(1, DeathVariantsCount + 1));
         }
 
+        private void OnDestroy()
+        {
+            StopAllCoroutines();
+        }
 
         private void OnEnable()
         {
             _fsm.ChangeState(EState.Move);
             _animator.Play(MoveState, -1, Random.Range(0f, 1f));
             _attackingTime = 0f;
-            _isDead = false;
             _collider.enabled = true;
             _rigidBody.isKinematic = false;
         }
@@ -116,7 +119,7 @@ namespace FantasyShooter
 
         private IEnumerator WaitBeforeDecommissioning()
         {
-            yield return new WaitForSeconds(4f);
+            yield return new WaitForSeconds(DelayBeforeDecommissioningSec);
             _fsm.ChangeState(EState.Decommissioning);
         }
 
@@ -127,6 +130,16 @@ namespace FantasyShooter
                 _decommissioningTween?.Kill();
                 Decommissioned?.Invoke(this);
             }
+        }
+
+        private void SetAnimatorSpeedValue()
+        {
+            _animator.SetFloat(
+                _speedID, 
+                    Mathf.Clamp(
+                        _speedReckoner.ReckonedSpeed / (_speed * SpeedToAnimationSpeedCoef), 
+                        0f, 
+                        1f));
         }
 
         #region FSM
@@ -149,14 +162,8 @@ namespace FantasyShooter
                 SetAnimatorSpeedValue();
         }
 
-        private void SetAnimatorSpeedValue()
-        {
-            _animator.SetFloat(_speedID, Mathf.Clamp(_speedReckoner.ReckonedSpeed / (_speed * 0.65f), 0f, 1f));
-        }
-
         private void Death_Enter()
         {
-            _isDead = true;
             _collider.enabled = false;
             _rigidBody.isKinematic = true;
             _animator.SetTrigger(_deathTriggerID);
@@ -179,16 +186,14 @@ namespace FantasyShooter
             if (Vector3.Distance(transform.position, _playerTransform.position) > _attackDistance)
                 _fsm.ChangeState(EState.Move);
         }
-        
 
         private void Decommissioning_Enter()
         {
             _decommissioningTween = transform
-                .DOMove(transform.position + new Vector3(0f, -2f, 0f), 5f)
+                .DOMove(transform.position + new Vector3(0f, -2f, 0f), DecommissionAnimationDuration)
                 .OnComplete(() => Decommissioned?.Invoke(this));
         }
 
-        #endregion
-
+        #endregion FSM
     }
 }

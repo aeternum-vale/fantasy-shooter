@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.45114696, g: 0.49976426, b: 0.56766427, a: 1}
+  m_IndirectSpecularColor: {r: 0.4464221, g: 0.4962389, b: 0.57472295, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -214,7 +214,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 0.3
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -271,14 +271,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: 0.2090646, y: -0.25268397, z: 0.056018684, w: 0.9430295}
+  m_LocalRotation: {x: 0.4576683, y: -0.25839508, z: -0.014818067, w: 0.8506187}
   m_LocalPosition: {x: 0, y: 8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 25, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 50.439, y: -45.357, z: -24.264}
 --- !u!1 &974027770
 GameObject:
   m_ObjectHideFlags: 0
@@ -290,7 +290,6 @@ GameObject:
   - component: {fileID: 974027774}
   - component: {fileID: 974027773}
   - component: {fileID: 974027772}
-  - component: {fileID: 974027775}
   m_Layer: 6
   m_Name: Ground
   m_TagString: Untagged
@@ -318,7 +317,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dbf898c9f9c4a2d46aa6336e23caeb61, type: 2}
+  - {fileID: 2100000, guid: d70e6cd610c6c424bbbcb8f8f5097f62, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -363,19 +362,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &974027775
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 974027770}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 10, y: 0.01, z: 10}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &996929477
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -778,9 +764,6 @@ MonoBehaviour:
   _player: {fileID: 6982812147933622148}
   _enemyPrefabs:
   - {fileID: 5271941782780110486, guid: a9a193ecbd7dda74d90dc478e5e2fc05, type: 3}
-  - {fileID: 5271941782780110486, guid: cc42970d93ae1b247a8303acbea4d2de, type: 3}
-  - {fileID: 5271941782780110486, guid: a3bd9185aa6189440987f5ca99e240ef, type: 3}
-  - {fileID: 5271941782780110486, guid: c762a2fa6a96ede43aafe1894d72b7c6, type: 3}
   _enemiesParent: {fileID: 1083867965}
   _enemySpawnInterval: 3
   _enemySpawnIntervalDecreaseSpeed: 0.03
@@ -3351,8 +3334,8 @@ MonoBehaviour:
   _bulletParent: {fileID: 125538198}
   _gunFlash: {fileID: 996929478}
   _bulletSpeed: 1
-  _bulletSpreadAngle: 0.25
-  _shootingInterval: 0.01
+  _bulletSpreadAngle: 0.5
+  _shootingInterval: 0.05
 --- !u!114 &6982812147933622149
 MonoBehaviour:
   m_ObjectHideFlags: 0

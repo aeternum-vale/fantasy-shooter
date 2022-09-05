@@ -11,7 +11,6 @@ namespace FantasyShooter
 {
     public class Game : MonoBehaviour
     {
-
         [SerializeField] private Camera _mainCamera;
         [SerializeField] private Player _player;
         [SerializeField] private Enemy[] _enemyPrefabs;
@@ -31,19 +30,23 @@ namespace FantasyShooter
         private float _healthBarInitScaleX;
         private Tween _healthBarTween;
 
-
         private void Awake()
         {
             Application.targetFrameRate = Constants.TargetFrameRate;
-
             _player.Died += OnPlayerDied;
-
             _healthBarInitScaleX = _healthBar.rectTransform.localScale.x;
+        }
+
+        private void Start()
+        {
+            StartCoroutine(StartSpawningCycle());
         }
 
         private void OnDestroy()
         {
+            _player.Died -= OnPlayerDied;
             _healthBarTween?.Kill();
+            StopAllCoroutines();
             LeanPool.DespawnAll();
         }
 
@@ -60,11 +63,6 @@ namespace FantasyShooter
             yield return new WaitForSecondsRealtime(5f);
             Time.timeScale = 1;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
-
-        private void Start()
-        {
-            StartCoroutine(StartSpawningCycle());
         }
 
         private IEnumerator StartSpawningCycle()
@@ -134,7 +132,6 @@ namespace FantasyShooter
             DespawnEnemy(enemy);
         }
 
-
         private void Update()
         {
             if (_enemySpawnInterval > _minEnemySpawnInterval)
@@ -143,5 +140,4 @@ namespace FantasyShooter
                 _enemySpawnInterval = _minEnemySpawnInterval;
         }
     }
-
 }

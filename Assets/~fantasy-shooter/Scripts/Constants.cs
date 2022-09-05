@@ -10,7 +10,5 @@ namespace FantasyShooter
 		public const int AimPlaneLayer = 9;
 
 		public static float DeltaTimeCorrection => Time.deltaTime * TargetFrameRate;
-
 	}
-
 }

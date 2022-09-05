@@ -15,7 +15,6 @@ namespace FantasyShooter
 
         public float ReckonedSpeed => _rockonedSpeed;
 
-
         private void OnEnable()
         {
             StartCoroutine(StartSpeedReckoningCycle());
@@ -26,20 +25,25 @@ namespace FantasyShooter
             StopAllCoroutines();
         }
 
+        private void OnDestroy()
+        {
+            StopAllCoroutines();
+        }
+
         private IEnumerator StartSpeedReckoningCycle()
         {
-            YieldInstruction timeToWait = new WaitForSeconds(_updateDelay);
+            YieldInstruction delay = new WaitForSeconds(_updateDelay);
             Vector3 lastPosition = transform.position;
             float lastTimestamp = Time.time;
 
             while (enabled)
             {
-                yield return timeToWait;
+                yield return delay;
 
                 var deltaPosition = (transform.position - lastPosition).magnitude;
                 var deltaTime = Time.time - lastTimestamp;
 
-                if (Mathf.Approximately(deltaPosition, 0f)) 
+                if (Mathf.Approximately(deltaPosition, 0f))
                     deltaPosition = 0f;
 
                 _targetReckonedSpeed = deltaPosition / deltaTime;
@@ -51,7 +55,11 @@ namespace FantasyShooter
 
         private void Update()
         {
-            _rockonedSpeed = Mathf.Lerp(_rockonedSpeed, _targetReckonedSpeed, (1f - _speedChangeSmoothness) * DeltaTimeCorrection);
+            _rockonedSpeed = 
+                Mathf.Lerp(
+                    _rockonedSpeed, 
+                    _targetReckonedSpeed, 
+                    (1f - _speedChangeSmoothness) * DeltaTimeCorrection);
         }
     }
 }

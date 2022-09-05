@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using static FantasyShooter.Constants;
 
-
 namespace FantasyShooter
 {
     public class Bullet : MonoBehaviour
@@ -13,12 +12,9 @@ namespace FantasyShooter
         [SerializeField] private Renderer _renderer;
         [SerializeField] private TrailRenderer _trailRenderer;
 
+        private float _speed;
 
         public float Speed { get => _speed; set => _speed = value; }
-
-
-
-        private float _speed;
 
         private void Update()
         {
