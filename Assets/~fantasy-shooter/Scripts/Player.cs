@@ -35,12 +35,13 @@ namespace FantasyShooter
 
         [Header("Shooting")]
         [SerializeField] private Transform _gunTip;
-
         [SerializeField] private Bullet _bulletPrefab;
         [SerializeField] private Transform _bulletParent;
+        [SerializeField] private ParticleSystem _gunFlash;
         [SerializeField] private float _bulletSpeed = 1f;
         [SerializeField] private float _bulletSpreadAngle = 1f;
-        [SerializeField] private ParticleSystem _gunFlash;
+        [SerializeField] private float _shootingInterval = 0.01f;
+
 
         private CharacterController _controller;
         private Input _input;
@@ -53,6 +54,7 @@ namespace FantasyShooter
         private Vector2 _targetAnimationMoveCoords;
         private float _targetRotation = 0f;
         private float _rotationVelocity;
+        private float _shootingTime = 0f;
 
         private int _animIDMoveX;
         private int _animIDMoveY;
@@ -88,11 +90,19 @@ namespace FantasyShooter
         {
             if (!_input.Shoot) return;
 
+            _shootingTime += Time.deltaTime;
+
+            if (_shootingTime < _shootingInterval) return;
+
+            _shootingTime = 0f;
+
+            float GetSpreadEulerAngle() => Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle) * _speed;
+
             var spreadRotation =
                 Quaternion.Euler(
-                    Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle),
-                    Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle),
-                    Random.Range(-_bulletSpreadAngle, _bulletSpreadAngle));
+                    GetSpreadEulerAngle(),
+                    GetSpreadEulerAngle(),
+                    GetSpreadEulerAngle());
 
             var bullet =
                 LeanPool.Spawn(
@@ -100,6 +110,9 @@ namespace FantasyShooter
                     _gunTip.position,
                     _gunTip.rotation * spreadRotation,
                     _bulletParent);
+
+            if (Mathf.Approximately(_targetRotation, transform.rotation.y))
+                bullet.transform.forward = (_aimGroundPosition - _gunTip.position).normalized;
 
             bullet.Speed = _bulletSpeed;
             AddListenersOnBullet(bullet);
@@ -173,7 +186,7 @@ namespace FantasyShooter
             if (Physics.Raycast(start, end - start, out RaycastHit hit, _mainCamera.farClipPlane, layerMask))
                 _aimGroundPosition = hit.point;
 
-            var lookDir = (_aimGroundPosition - transform.position).normalized;
+            Vector3 lookDir = (_aimGroundPosition - transform.position).normalized;
             _targetRotation = Mathf.Atan2(lookDir.x, lookDir.z) * Mathf.Rad2Deg + _additionalAngle;
 
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,

@@ -22,6 +22,7 @@ namespace FantasyShooter
         [SerializeField] private int _maxEnemiesCount;
         [ReadOnly]
         [SerializeField] private int _enemiesCount;
+        [SerializeField] private bool _isSpawningOn = true;
 
         [Header("UI")]
         [SerializeField] private Image _healthBar;
@@ -78,6 +79,7 @@ namespace FantasyShooter
         [Button]
         private void SpawnEnemy()
         {
+            if (!_isSpawningOn) return;
             if (_enemiesCount >= _maxEnemiesCount) return;
 
             Enemy prefab = _enemyPrefabs[Random.Range(0, _enemyPrefabs.Length)];

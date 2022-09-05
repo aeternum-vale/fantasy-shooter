@@ -787,6 +787,7 @@ MonoBehaviour:
   _minEnemySpawnInterval: 0.1
   _maxEnemiesCount: 50
   _enemiesCount: 0
+  _isSpawningOn: 1
   _healthBar: {fileID: 1522335609}
   _gameOverLabel: {fileID: 1996677586}
 --- !u!4 &1515670661
@@ -3342,15 +3343,16 @@ MonoBehaviour:
   _moveSpeed: 2
   _sprintSpeed: 3
   _rotationSmoothness: 0.12
-  _additionalAngle: 0
+  _additionalAngle: 1
   _speedChangeRate: 10
   _speedSmoothness: 0.906
   _gunTip: {fileID: 582532864}
   _bulletPrefab: {fileID: 3046252638759303565, guid: 3fa48779086066542a6b24586cb73416, type: 3}
   _bulletParent: {fileID: 125538198}
-  _bulletSpeed: 1
-  _bulletSpreadAngle: 0.5
   _gunFlash: {fileID: 996929478}
+  _bulletSpeed: 1
+  _bulletSpreadAngle: 0.25
+  _shootingInterval: 0.01
 --- !u!114 &6982812147933622149
 MonoBehaviour:
   m_ObjectHideFlags: 0
