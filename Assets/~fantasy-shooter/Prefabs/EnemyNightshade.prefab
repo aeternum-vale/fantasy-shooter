@@ -72,7 +72,7 @@ Animator:
   m_GameObject: {fileID: 2015441962541197572}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 33e678a08bd41454fb8bb2db04cfdcd2, type: 2}
+  m_Controller: {fileID: 9100000, guid: 051167eec61ae684da2b2932696a8a6e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -138,9 +138,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1814390165336509505, guid: e321e0c514a0e0b43af96a3be76a9762, type: 3}
+      propertyPath: _speed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1814390165336509505, guid: e321e0c514a0e0b43af96a3be76a9762, type: 3}
       propertyPath: _animator
       value: 
       objectReference: {fileID: 6262496538245435280}
+    - target: {fileID: 1814390165336509505, guid: e321e0c514a0e0b43af96a3be76a9762, type: 3}
+      propertyPath: _damageAmount
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 1814390165336509519, guid: e321e0c514a0e0b43af96a3be76a9762, type: 3}
       propertyPath: m_Name
       value: EnemyNightshade

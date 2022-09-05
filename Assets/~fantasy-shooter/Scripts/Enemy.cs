@@ -19,7 +19,7 @@ namespace FantasyShooter
             Decommissioning
         }
 
-        public event Action DamagePlayer;
+        public event Action<Enemy> DamagePlayer;
         public event Action<Enemy> Decommissioned;
 
         [SerializeField] private Transform _playerTransform;
@@ -33,6 +33,7 @@ namespace FantasyShooter
         [SerializeField] private float _speed;
         [SerializeField] private float _attackDistance;
         [SerializeField] private float _attackTimeForDamage;
+        [SerializeField] private float _damageAmount;
 
         private StateMachine<EState> _fsm;
         private SpeedReckoner _speedReckoner;
@@ -53,6 +54,7 @@ namespace FantasyShooter
         private const float DecommissionAnimationDuration = 5f;
 
         public Transform PlayerTransform { get => _playerTransform; set => _playerTransform = value; }
+        public float DamageAmount => _damageAmount;
 
         private void Awake()
         {
@@ -113,7 +115,7 @@ namespace FantasyShooter
             if (_attackingTime >= _attackTimeForDamage)
             {
                 _attackingTime = 0f;
-                DamagePlayer?.Invoke();
+                DamagePlayer?.Invoke(this);
             }
         }
 
@@ -135,10 +137,10 @@ namespace FantasyShooter
         private void SetAnimatorSpeedValue()
         {
             _animator.SetFloat(
-                _speedID, 
+                _speedID,
                     Mathf.Clamp(
-                        _speedReckoner.ReckonedSpeed / (_speed * SpeedToAnimationSpeedCoef), 
-                        0f, 
+                        _speedReckoner.ReckonedSpeed / (_speed * SpeedToAnimationSpeedCoef),
+                        0f,
                         1f));
         }
 

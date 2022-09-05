@@ -47,14 +47,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a279b0664428894fabd8f1331f9e13a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerTransform: {fileID: 0}
   _animator: {fileID: 0}
   _rigidBody: {fileID: 8855844054691375997}
   _collider: {fileID: 1429276291025112754}
   _rotateSmoothness: 0.918
-  _speed: 2
+  _speed: 3
   _attackDistance: 1.15
   _attackTimeForDamage: 0.5
-  _playerTransform: {fileID: 0}
+  _damageAmount: 20
 --- !u!54 &8855844054691375997
 Rigidbody:
   m_ObjectHideFlags: 0

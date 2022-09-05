@@ -107,9 +107,9 @@ namespace FantasyShooter
             enemy.Decommissioned -= OnDecommissioned;
         }
 
-        private void OnEnemyDamagePlayer()
+        private void OnEnemyDamagePlayer(Enemy enemy)
         {
-            _player.Damage();
+            _player.Damage(enemy.DamageAmount);
 
             UpdateHealthBarWithAnimation();
         }

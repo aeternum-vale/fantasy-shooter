@@ -8,6 +8,11 @@ ModelImporter:
     second: mixamo.com
   externalObjects:
   - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Nightshade_MAT
+    second: {fileID: 2100000, guid: c65b95c6198ccd7478890adc8c7fea82, type: 2}
+  - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
       name: Nightshade_diffuse

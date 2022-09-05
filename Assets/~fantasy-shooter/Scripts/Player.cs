@@ -20,7 +20,6 @@ namespace FantasyShooter
         [ReadOnly]
         [SerializeField] private float _health;
         [SerializeField] private float _healthTotal;
-        [SerializeField] private float _decreasedHealthOnDamage;
         [SerializeField] private float _moveSpeed = 2f;
         [SerializeField] private float _sprintSpeed = 3f;
         [Range(0f, 0.3f)]
@@ -32,6 +31,7 @@ namespace FantasyShooter
 
         [Header("Shooting")]
         [SerializeField] private Transform _gunTip;
+        [SerializeField] private Transform _aimPlane;
         [SerializeField] private Bullet _bulletPrefab;
         [SerializeField] private Transform _bulletParent;
         [SerializeField] private ParticleSystem _gunFlash;
@@ -45,7 +45,7 @@ namespace FantasyShooter
 
         private float _speed;
         private float _targetSpeed;
-        private Vector3 _aimGroundPosition;
+        private Vector3 _aimPoint;
         private Vector2 _animationMoveCoords;
         private Vector2 _targetAnimationMoveCoords;
         private float _targetRotation = 0f;
@@ -54,6 +54,8 @@ namespace FantasyShooter
 
         private int _animIDMoveX;
         private int _animIDMoveY;
+
+        private const float RotationThresholdForAimCorrection = 0.3f;
 
         public float NormalizedHealth => _health / _healthTotal;
 
@@ -84,7 +86,8 @@ namespace FantasyShooter
 
         private void UpdateShooting()
         {
-            if (!_input.Shoot) {
+            if (!_input.Shoot)
+            {
                 _shootingTime = _shootingInterval;
                 return;
             };
@@ -110,8 +113,8 @@ namespace FantasyShooter
                     _gunTip.rotation * spreadRotation,
                     _bulletParent);
 
-            if (Mathf.Approximately(_targetRotation, transform.rotation.y))
-                bullet.transform.forward = (_aimGroundPosition - _gunTip.position).normalized;
+            if (Mathf.Abs(_targetRotation - transform.rotation.y) <= RotationThresholdForAimCorrection)
+                bullet.transform.forward = (_aimPoint - _gunTip.position).normalized;
 
             bullet.Speed = _bulletSpeed;
             AddListenersOnBullet(bullet);
@@ -178,14 +181,9 @@ namespace FantasyShooter
 
         private void UpdateRotation()
         {
-            Vector3 start = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            Vector3 end = start + _mainCamera.transform.forward;
+            CalculateAimPoint();
 
-            int layerMask = 1 << AimPlaneLayer;
-            if (Physics.Raycast(start, end - start, out RaycastHit hit, _mainCamera.farClipPlane, layerMask))
-                _aimGroundPosition = hit.point;
-
-            Vector3 lookDir = (_aimGroundPosition - transform.position).normalized;
+            Vector3 lookDir = (_aimPoint - transform.position).normalized;
             _targetRotation = Mathf.Atan2(lookDir.x, lookDir.z) * Mathf.Rad2Deg + _additionalAngle;
 
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
@@ -194,9 +192,22 @@ namespace FantasyShooter
             transform.rotation = Quaternion.Euler(0f, rotation, 0f);
         }
 
-        public void Damage()
+        private void CalculateAimPoint()
         {
-            _health -= _decreasedHealthOnDamage;
+            Vector3 screenPoint = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            Vector3 directionVector = _mainCamera.transform.forward;
+            float aimPlaneY = _aimPlane.transform.position.y;
+
+            float t = (aimPlaneY - screenPoint.y) / directionVector.y;
+            float aimPointX = directionVector.x * t + screenPoint.x;
+            float aimPointZ = directionVector.z * t + screenPoint.z;
+
+            _aimPoint = new Vector3(aimPointX, aimPlaneY, aimPointZ);
+        }
+
+        public void Damage(float damageAmount)
+        {
+            _health -= damageAmount;
             if (_health <= 0)
             {
                 _health = 0;
